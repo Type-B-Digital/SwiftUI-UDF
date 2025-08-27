@@ -1,111 +1,262 @@
-# Clean Unidirectional Architecture in SwiftUI with ReSwift
+# Action-Driven MVVM Architecture for SwiftUI with Clean Async Handling
 
-## Problems with Current MVVM in SwiftUI
+## Why This Pattern?
 
-While MVVM is commonly used in SwiftUI, it tends to fall short as projects grow in complexity. Some of the key issues include:
+This approach enhances the **maintainability**, **readability**, and **debuggability** of SwiftUI apps which uses MVVM architecture.
 
-### 1. **Tight Coupling Between ViewModel and Views**
-- ViewModels often grow large and tightly coupled to the views they're serving.
-- Reusability is reduced, and testing becomes harder.
+### Benefits
 
-### 2. **Scattered State Management**
-- State updates can occur in multiple places (e.g., view, view model, combine pipelines).
-- Difficult to track source of truth or reason about app state.
+- **Centralized Action Management**: All async actions go through a `dispatch` function in the `BaseViewModel`.
+- **Automatic Loader Handling**: Easily show/hide loading indicators (e.g. spinners, shimmers) per action.
+- **Centralized Error Handling**: Errors are tracked and exposed for each action via a clean API.
+- **Centralize Lifecycle Tracking with `onStatusUpdate`**: Log or analyze when an action starts or finishes, audit trail.
+- **Minimal Boilerplate**: Developers only write the logic unique to each `ViewModel` action.
+- **Strong Separation of Concerns**: UI, ViewModel, and Service layers remain clearly separated.
+- **Easy to adopt into current MVVM code**: just use the same folder structure, same network services etc and extends viewmodels with base.
 
-### 3. **Ad-hoc Side Effects**
-- API calls and side effects are performed inside `@MainActor` ViewModels.
-- No standard place to manage side effects like networking, analytics, etc.
+### Unit Testing gains
 
-### 4. **No Formal Action Tracking**
-- Impossible to trace which action caused a state change.
-- Harder to debug, test, or retry failed actions.
+- **Testable ViewModels**: Each ViewModel remains isolated and can be tested by injecting mock services.
+- **Centralized Error & Loading Assertions:**: Easily verify loading states and errors with isLoading(for:) and error(for:)
+- **Mockable Service Layer**: Service dependencies follow protocol-based abstraction, allowing clean mock injection for testing.
+- **Action-Based State Tracking**: Actions are identified via ActionId, enabling precise testing of async behavior and results.
+- **Decoupled Side Effects**: Success and failure paths (onSuccess, onError) are separate and testable without UI involvement.
+- **Predictable Data Flow**: Unidirectional flow simplifies test setup and improves test determinism.
+- **Easy State Verification**: No need to guess—just assert published values and track what changed and why.
+- **Fully Unit test coverage with bolerplate code**: just use the same `FollowersViewModelTests.swift` as a boilerplate. Each action needs only three test cases for fully coverage. success, failure and lifecycle tracked.
 
-### 5. **Inconsistent Error Handling**
-- Errors handled in random ways: closures, Combine, `do-catch`, etc.
-- ViewModels cluttered with conditional error logic.
+## Why this scales for large apps
+
+- **Feature modularity by default**: Each screen/feature owns its `ActionId`, `ViewModel`, and services, avoiding a monolithic global store.
+- **Strong contracts with `ActionId`**: Action-scoped loading/error states prevent cross-feature coupling and state bleed.
+- **Predictable, unidirectional flow**: Clear entry points (`dispatch`, `triggerUIActions`) simplify reasoning as teams and code grow.
+- **Concurrency that composes**: `dispatchGroup(...)` enables parallel fetches with a single UI loader, useful for complex dashboards.
+- **Observability hooks**: `onStatusUpdate`, `onSuccess`, `onError` provide centralized logging/metrics without polluting feature code.
+- **Testable at scale**: Protocol-driven services + per-action assertions keep tests fast and isolated as modules multiply.
+- **Performance and memory**: No always-on global state container; view models are scoped to screens and deinit cleanly.
+- **Incremental adoption**: Drop into existing MVVM code; migrate feature-by-feature, not a risky “big bang” rewrite.
+- **Team-friendly ownership**: Clear boundaries let squads own features independently with minimal merge conflicts.
+- **Adaptable complexity**: Start simple; introduce analytics, retries, backoff, or caching via the same hooks when needed.
+
+## Folder Structure
+
+```
+MVVM
+├── Views/
+│   └── FollowersView.swift
+├── ViewModels/
+│   └── FollowersViewModel.swift
+├── Base/
+│   └── BaseViewModel.swift
+│   └── ActionIdType.swift
+├── Services/
+│   └── NetworkService.swift
+├── Models/
+│   └── Follower.swift
+MVVMTests/
+│   └── FollowersViewModelTests.swift
+```
+
+## Data Flow
+
+<img width="997" alt="data flow" src="https://github.com/user-attachments/assets/b0c7c0b8-f500-48c4-92f9-61372fc8a907" />  <br>
+
+1. **View** calls a function in the `ViewModel`
+2. **ViewModel** uses `dispatch(actionId:task:)` to perform the async task
+3. The loader state is automatically updated via `setLoading(true/false)`
+4. The **Service** performs the network request
+5. On success or error:
+   - `onSuccess(actionId:result)` or `onError(actionId:error)` is called
+   - `onStatusUpdate(actionId:isLoading:)` is invoked for tracking/logging
+6. The **View** reacts to `@Published` states (data, loading, or error)
+
+## Layers Explained
+
+### `BaseViewModel`
+
+Handles:
+- Loader state per action
+- Error message per action
+- Centralized dispatch with `Task { }`
+- Hooks: `onSuccess`, `onError`, `onStatusUpdate`
+
+### `ActionIdType`
+
+A protocol to constrain enums like:
+
+```swift
+enum FollowersActionId: ActionIdType {
+    case fetchFollowers
+    case fetchUserProfile
+}
+```
+
+### `FollowersViewModel`
+
+Extends `BaseViewModel<FollowersActionId>` and overrides:
+- `onSuccess` to update data state
+- `onError` to handle errors
+- `onStatusUpdate` for logging/tracking lifecycle
+
+### `FollowersView`
+
+A SwiftUI view that reacts to:
+- `isLoading(for: .fetchFollowers)` to show shimmer/spinner
+- `error(for: .fetchFollowers)` to show error message
+- `@Published` data (`followers`) for UI display
+
+## How to Add a New Date Fetch Action
+
+To fetch a new resource, e.g., **User Profile**:
+
+### 1. Extend `ActionId` enum:
+
+```swift
+enum FollowersActionId: ActionIdType {
+    case fetchFollowers
+    case fetchUserProfile // ← new
+}
+```
+
+### 2. Add method to ViewModel:
+
+```swift
+func getUserProfile(for username: String) {
+    dispatch(actionId: .fetchUserProfile, task: {
+        try await self.service.fetchUserProfile(username: username)
+    })
+}
+```
+
+### 3. Handle success/error:
+
+```swift
+override func onSuccess<T>(actionId: ActionId, result: T) {
+    switch actionId {
+    case .fetchUserProfile:
+        if let profile = result as? UserProfile {
+            self.userProfile = profile
+        }
+    default: break
+    }
+}
+
+override func onError(actionId: ActionId, error: Error) {
+    switch actionId {
+    case .fetchUserProfile:
+        print("Error fetching profile: \(error.localizedDescription)")
+    default: break
+    }
+}
+```
+
+### 4. Update View:
+
+```swift
+if viewModel.isLoading(for: .fetchUserProfile) {
+    ShimmerView()
+} else if let error = viewModel.error(for: .fetchUserProfile) {
+    Text("Error: \(error)")
+} else {
+    ProfileView(profile: viewModel.userProfile)
+}
+```
+
+## Tracking Events (Optional)
+
+Override `onStatusUpdate` to track the status of actions:
+
+```swift
+override func onStatusUpdate(actionId: FollowersActionId, isLoading: Bool) {
+    let status = isLoading ? "started" : "finished"
+    print("[\(actionId)] \(status) at \(Date())")
+}
+```
+
+Great for:
+- Debugging sequence of events
+- Logging durations
+- Analytics pipelines
+
+## UI Only Actions
+
+### UI-Only Action Flow (e.g., tappedFollowersButton)
+
+This flow is used for pure UI interactions (no API involved):
+
+```
+FollowersView
+ └── Button("Load Followers")
+      └── viewModel.triggerUIActions(actionId: .tappedFollowersButton)
+           └── [Analytics] UIAction: tappedFollowersButton
+```
+
+- Used for logging UI events like taps or navigations.
+- No data fetch or loading indicator involved.
+- Still goes through `BaseViewModel.triggerUIActions` for audit trail or analytics logging.
+- You can optionally use `onUIAction(actionId:)` to respond in the ViewModel.
 
 ---
 
-## Benefits of Unidirectional Architecture
+### Fetch Action Flow (e.g., fetchFollowers)
 
-Adopting a clean, unidirectional data flow solves these issues by separating concerns clearly. This project adopts a ReSwift-based architecture with structured layers:
+This flow handles an async operation like fetching data from the network:
 
-### 1. **Single Source of Truth**
-- `AppState` acts as the only source of truth.
-- Views reactively reflect the state via `@Published` properties mapped from store updates.
+```
+FollowersView
+ └── Button("Load Followers")
+      └── viewModel.triggerUIActions(actionId: .tappedFollowersButton)
+           └── dispatch(actionId: .fetchFollowers, task: { ... })
+                ├── setLoading(true, for: .fetchFollowers)
+                │    └── onStatusUpdate → "Data fetching for fetchFollowers action starts"
+                ├── Perform async task (e.g. service.fetchFollowers)
+                └── Upon success:
+                     ├── onSuccess(actionId: .fetchFollowers, result: ...)
+                     ├── setLoading(false, for: .fetchFollowers)
+                     │    └── onStatusUpdate → "Data fetching for fetchFollowers action ends"
+                     └── View reacts to @Published data
+```
 
-### 2. **Pure Actions, Reducers, and State**
-- All state changes happen via dispatched actions.
-- Reducers are pure functions, making them predictable and testable.
-
-### 3. **Tracked Actions with `actionId`s**
-- Each dispatched action is uniquely tracked.
-- Status (`INIT`, `COMPLETED`, `ERROR`) is managed centrally and observed in `BaseViewModel`.
-
-### 4. **Centralized Side Effects via Middleware**
-- All asynchronous or external side effects (e.g., API calls) handled in Redux middleware.
-- Actions like `.request`, `.success`, `.failure` provide a predictable async flow.
-
-### 5. **BaseViewModel for Reusability**
-- All ViewModels extend `BaseViewModel`, which:
-  - Subscribes to state.
-  - Manages action lifecycle.
-  - Tracks status and errors.
-  - Prevents repetition and boilerplate code.
-
-### 6. **Composable, Predictable Views**
-- SwiftUI views become simple renderers of state.
-- Business logic and mutations are handled outside the views.
+- Automatically manages loader state and error tracking.
+- View uses:
+  - `isLoading(for: .fetchFollowers)` → show spinner/shimmer
+  - `error(for: .fetchFollowers)` → show error message
+  - `followers` → actual data for the UI
 
 ---
 
-## Architecture Overview
+### Example Button Logic
 
-### Layers:
+```swift
+Button("Load Followers") {
+    print("User clicked tappedFollowersButton")
+    viewModel.triggerUIActions(actionId: .tappedFollowersButton)
+}
+```
 
-![layers](https://github.com/user-attachments/assets/82131ec4-c120-4161-ae34-c25a326ecda5)
+In `FollowersViewModel`:
 
-### Flow:
+```swift
+override func onUIAction(actionId: FollowersActionId) {
+    switch actionId {
+    case .tappedFollowersButton:
+        dispatch(actionId: .fetchFollowers, task: {
+            try await self.service.fetchFollowers()
+        })
+    default: break
+    }
+}
+```
 
-1. View triggers `dispatchAction(FetchFollowers.request(...))`.
-2. `BaseViewModel` adds `actionId` and dispatches a `TrackedAction`.
-3. Middleware listens and triggers async operations (e.g., API calls).
-4. Middleware dispatches `.perform`, `.success`, or `.failure` actions.
-5. Reducers update the `AppState`.
-6. `BaseViewModel` observes state updates and calls `onStateUpdate` or `onError`.
-7. View reflects new state via `@Published` bindings.
-   
+## Final Thoughts
 
-![uni directional data flow](https://github.com/user-attachments/assets/bfd89d16-730b-4243-b16b-2d5fdbda8467)
+This pattern scales well with apps that deal with multiple async states, API calls, and user-driven actions.
 
----
+It allows **new developers to understand the flow quickly** while giving **senior developers full flexibility** and control over async logic and side effects.
 
-## Benefits Recap
+## Contributions
 
-![ChatGPT Image Jun 5, 2025, 08_34_58 AM](https://github.com/user-attachments/assets/0739bef8-d92a-4d9f-8a99-a062eb43443f)
-
-| Concern               | MVVM                          | Unidirectional Architecture     |
-|----------------------|-------------------------------|---------------------------------|
-| State Management      | Scattered                     | Centralized in AppState         |
-| Side Effects          | In ViewModels                 | Middleware only                 |
-| Action Tracking       | Not possible                  | Fully Tracked via `actionId`    |
-| ViewModel Size        | Grows large                   | Modular, logic-free             |
-| Debuggability         | Hard to trace bugs            | Fully traceable with actions    |
-| Reusability           | Poor                          | High due to BaseViewModel       |
-| Testing               | Complex due to state spread   | Easy due to pure functions      |
+PRs, issues, and ideas are welcome to improve this pattern further.
 
 ---
 
-## Conclusion
-
-This architecture brings **clarity**, **predictability**, **testability**, and **scalability** to SwiftUI app. It enforces best practices, ensures unidirectional flow, and enables production-grade app development with less friction.
-
-## References 
-
-- ReSwift : https://github.com/ReSwift/ReSwift?tab=readme-ov-file
-- PromiseKit : https://github.com/mxcl/PromiseKit
-
-Medium :
-
-- https://medium.com/joshtastic-blog/redux-for-ios-apps-d581f0c58b34
-- https://medium.com/@anshulrokde/redux-in-swift-beeb15b60517
