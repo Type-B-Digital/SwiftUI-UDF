@@ -17,7 +17,7 @@ struct FollowersListView: View {
                     ProgressView("Loading followers...")
                 } else {
                     Button("Fetch Git Followers") {
-                        viewModel.fetchFollowers(name: "sallen0400567")
+                        viewModel.fetchFollowers(name: "KavinduDissanayake")
                     }
                     .buttonStyle(.borderedProminent)
                 }

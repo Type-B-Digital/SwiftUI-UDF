@@ -42,5 +42,21 @@ class APIService {
                 completion(.failure(.networkError(error)))
             }
         }
+        .cURLDescription { description in
+            print(description)
+        }
+    }
+
+    /// Async/await variant
+    func fetchFollowers(for user: String) async throws -> [Follower] {
+        let url = "https://api.github.com/users/\(user)/followers"
+        do {
+            let followers = try await AF.request(url)
+                .serializingDecodable([Follower].self)
+                .value
+            return followers
+        } catch {
+            throw APIError.networkError(error)
+        }
     }
 }

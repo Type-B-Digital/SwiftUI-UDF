@@ -16,28 +16,27 @@ let followersMiddleware: Middleware<AppState> = { dispatch, getState in
 
                 switch inner {
                 case .request(let username):
-                    
-                    ///this section can be our existing NetworkUtil fetch functions
-                    APIService.shared.fetchFollowers(for: username) { result in
-                        switch result {
-                        case .success(let followers):
-                            
-                            /// Dispatching perform action with fetched followers
+                    /// Async/await version
+                    Task {
+                        do {
+                            let followers = try await APIService.shared.fetchFollowers(for: username)
                             dispatch(TrackedAction(
                                 actionId: tracked.actionId,
                                 innerAction: FetchFollowers.perform(followers: followers)
                             ))
-                            
-                            /// Dispatching success action after performing the fetch
                             dispatch(TrackedAction(
                                 actionId: tracked.actionId,
                                 innerAction: FetchFollowers.success
                             ))
-                            
-                        case .failure(let error):
+                        } catch let error as APIError {
                             dispatch(TrackedAction(
                                 actionId: tracked.actionId,
                                 innerAction: FetchFollowers.failure(error: error)
+                            ))
+                        } catch {
+                            dispatch(TrackedAction(
+                                actionId: tracked.actionId,
+                                innerAction: FetchFollowers.failure(error: .networkError(error))
                             ))
                         }
                     }
