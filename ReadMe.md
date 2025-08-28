@@ -109,4 +109,4 @@ Medium :
 
 - https://medium.com/joshtastic-blog/redux-for-ios-apps-d581f0c58b34
 - https://medium.com/@anshulrokde/redux-in-swift-beeb15b60517
--  https://medium.com/p/fc62f1e0da9f - Latest technical experience
+- https://medium.com/p/fc62f1e0da9f - Sri Lankan large ride-hailing app: Latest technical experience
