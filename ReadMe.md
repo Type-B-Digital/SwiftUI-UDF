@@ -259,4 +259,5 @@ It allows **new developers to understand the flow quickly** while giving **senio
 PRs, issues, and ideas are welcome to improve this pattern further.
 
 ---
+- https://medium.com/p/fc62f1e0da9f - Sri Lankan large ride-hailing app: Latest technical experience
 
