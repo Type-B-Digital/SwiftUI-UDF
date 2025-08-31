@@ -1,5 +1,7 @@
 # SwiftUI White-Labeling Template
 
+![WhiteLabeling Architecture](https://github.com/Type-B-Digital/swiftui-udf/raw/white-labeling/WhiteLabeling_Architecture.png)
+
 A powerful and flexible iOS white-labeling solution built with SwiftUI that allows you to create multiple branded versions of your app from a single codebase.
 
 ## 🚀 Features
