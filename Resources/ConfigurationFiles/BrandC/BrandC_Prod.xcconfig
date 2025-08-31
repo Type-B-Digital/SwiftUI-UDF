@@ -3,6 +3,7 @@ API_KEY = sk-prod-brandC-production-key
 BASE_URL = https:\/\/api.brandC.com\/v1
 BUNDLE_ID = com.brandC.app
 APP_FLAVOR = production
+APP_NAME = BrandC
 
 // MARK: - Visual Assets
 APP_ICON = AppIcon

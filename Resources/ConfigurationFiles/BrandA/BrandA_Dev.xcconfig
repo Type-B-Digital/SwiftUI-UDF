@@ -1,8 +1,9 @@
 // MARK: - Core App Configuration
 API_KEY = sk-dev-brandA-development-key
-BASE_URL = https:\/\/dev-api.brandA.com\/v1
+BASE_URL = https:\/\/api.brandA.com\/v1
 BUNDLE_ID = com.brandA.app.dev
 APP_FLAVOR = development
+APP_NAME = BrandA Dev
 
 // MARK: - Visual Assets
 APP_ICON = AppIcon-Dev

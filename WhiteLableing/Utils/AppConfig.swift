@@ -15,7 +15,8 @@ final class AppConfig {
         case apiKey = "API_KEY"
         case baseURL = "BASE_URL"
         case bundleId = "BUNDLE_ID"
-        case appFlavor = "APPFLAVOR"
+        case appFlavor = "APP_FLAVOR"
+        case appName = "APP_NAME"
     }
     
     static func getValueFor( key: Key) -> String? {
@@ -68,12 +69,14 @@ final class AppConfig {
     
     // Function to determine if logging should be enabled
     static func shouldEnableLogging() -> Bool {
-        return  getEnvironmentType()  != .production
+        guard let environmentType = getEnvironmentType() else { return false }
+        return environmentType != AppEnvironmentType.production
     }
     
-    // Temp soltion for for wolrd wild certfication not in development flavor
+    // Temp solution for world wide certification not in development flavor
     static func enableCertficates() -> Bool {
-        return  getEnvironmentType() == .production
+        guard let environmentType = getEnvironmentType() else { return false }
+        return environmentType == AppEnvironmentType.production
     }
     
 }

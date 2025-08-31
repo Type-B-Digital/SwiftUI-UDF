@@ -4,6 +4,7 @@ API_KEY = sk-prod-brandA-production-key
 BASE_URL = https:\/\/api.brandA.com\/v1
 BUNDLE_ID = com.brandA.app
 APP_FLAVOR = production
+APP_NAME = BrandA
 
 // MARK: - Visual Assets
 APP_ICON = AppIcon

@@ -3,6 +3,7 @@ API_KEY = sk-staging-brandB-staging-key
 BASE_URL = https:\/\/staging-api.brandB.com\/v1
 BUNDLE_ID = com.brandA.app.staging
 APP_FLAVOR = staging
+APP_NAME = BrandB Staging
 
 // MARK: - Visual Assets
 APP_ICON = AppIcon-Staging

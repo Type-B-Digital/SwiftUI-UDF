@@ -1,0 +1,64 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "App Overview" : {
+
+    },
+    "Brand!" : {
+
+    },
+    "Copy Device ID" : {
+
+    },
+    "Copy to clipboard for support" : {
+
+    },
+    "Dark Mode" : {
+
+    },
+    "Device" : {
+
+    },
+    "Environment" : {
+
+    },
+    "Home" : {
+
+    },
+    "Not configured" : {
+
+    },
+    "Rate and review the app" : {
+
+    },
+    "Settings" : {
+
+    },
+    "Status" : {
+
+    },
+    "Switch between light and dark themes" : {
+
+    },
+    "Unknown" : {
+
+    },
+    "Version %@ • Build %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Version %1$@ • Build %2$@"
+          }
+        }
+      }
+    },
+    "View in App Store" : {
+
+    }
+  },
+  "version" : "1.0"
+}

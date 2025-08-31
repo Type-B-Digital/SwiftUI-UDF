@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App Identity -->
+    <key>CFBundleDisplayName</key>
+    <string>$(DISPLAY_NAME)</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>$(MARKETING_VERSION)</string>
+    <key>CFBundleVersion</key>
+    <string>$(CURRENT_PROJECT_VERSION)</string>
+
+    <!-- Custom AppConfig Dictionary -->
+    <key>AppConfig</key>
+    <dict>
+        <key>APP_NAME</key>
+        <string>$(APP_NAME)</string>
+        <key>API_KEY</key>
+        <string>$(API_KEY)</string>
+        <key>BASE_URL</key>
+        <string>$(BASE_URL)</string>
+        <key>BUNDLE_ID</key>
+        <string>$(BUNDLE_ID)</string>
+        <key>APP_FLAVOR</key>
+        <string>$(APP_FLAVOR)</string>
+        <key>APP_ICON</key>
+        <string>$(APP_ICON)</string>
+        <key>SPLASH_SCREEN</key>
+        <string>$(SPLASH_SCREEN)</string>
+    </dict>
+
+    <!-- Device Requirements -->
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+
+    <!-- Supported Device Orientations -->
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+
+    <!-- Launch Screen -->
+    <key>UILaunchStoryboardName</key>
+    <string>$(SPLASH_SCREEN)</string>
+
+    <!-- App Icons -->
+    <key>CFBundleIcons</key>
+    <dict>
+        <key>CFBundlePrimaryIcon</key>
+        <dict>
+            <key>CFBundleIconName</key>
+            <string>$(APP_ICON)</string>
+        </dict>
+    </dict>
+
+    <!-- Minimum OS Version -->
+    <key>MinimumOSVersion</key>
+    <string>14.0</string>
+
+    <!-- SwiftUI Support -->
+    <key>UIApplicationSupportsIndirectInputEvents</key>
+    <true/>
+</dict>
+</plist>

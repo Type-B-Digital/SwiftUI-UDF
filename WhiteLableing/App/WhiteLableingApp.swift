@@ -12,7 +12,8 @@ struct WhiteLableingApp: App {
 
     var body: some Scene {
         WindowGroup {
-            AppConfigDetailsView()
+            MainTabView()
+            
         }
     }
 }

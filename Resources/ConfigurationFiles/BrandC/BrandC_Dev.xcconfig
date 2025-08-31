@@ -5,6 +5,7 @@ API_KEY = sk-dev-brandC-development-key
 BASE_URL = https:\/\/dev-api.brandC.com\/v1
 BUNDLE_ID = com.brandC.app.dev
 APP_FLAVOR = development
+APP_NAME = BrandC Dev
 
 // MARK: - Visual Assets
 APP_ICON = AppIcon-Dev
