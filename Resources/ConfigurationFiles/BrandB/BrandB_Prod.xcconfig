@@ -1,3 +1,6 @@
+// MARK: - Info.plist Configuration
+INFOPLIST_FILE = Resources/Info/BrandB_Info.plist
+
 // MARK: - Core App Configuration
 API_KEY = sk-prod-brandB-production-key
 BASE_URL = https:\/\/api.brandB.com\/v1

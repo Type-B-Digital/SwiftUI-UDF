@@ -1,5 +1,8 @@
 // MARK: - App Identity
 
+// MARK: - Info.plist Configuration
+INFOPLIST_FILE = Resources/Info/BrandC_Info.plist
+
 // MARK: - Core App Configuration
 API_KEY = sk-dev-brandC-development-key
 BASE_URL = https:\/\/dev-api.brandC.com\/v1

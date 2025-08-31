@@ -1,3 +1,6 @@
+// MARK: - Info.plist Configuration
+INFOPLIST_FILE = Resources/Info/BrandC_Info.plist
+
 // MARK: - Core App Configuration
 API_KEY = sk-staging-brandC-staging-key
 BASE_URL = https:\/\/api.brandC.com\/v1

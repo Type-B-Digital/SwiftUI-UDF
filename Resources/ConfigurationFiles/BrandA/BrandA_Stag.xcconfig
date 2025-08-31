@@ -1,4 +1,7 @@
 
+// MARK: - Info.plist Configuration
+INFOPLIST_FILE = Resources/Info/BrandA_Info.plist
+
 // MARK: - Core App Configuration
 API_KEY = sk-staging-brandA-staging-key
 BASE_URL = https:\/\/staging-api.brandA.com\/v1
