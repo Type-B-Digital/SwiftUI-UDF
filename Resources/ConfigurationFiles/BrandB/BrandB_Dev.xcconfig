@@ -1,0 +1,11 @@
+// MARK: - App Identity
+
+// MARK: - Core App Configuration
+API_KEY = sk-dev-brandB-development-key
+BASE_URL = https:\/\/dev-api.brandB.com\/v1
+BUNDLE_ID = com.brandB.app.dev
+APP_FLAVOR = development
+
+// MARK: - Visual Assets
+APP_ICON = AppIcon-Dev
+SPLASH_SCREEN = SplashScreen-Dev

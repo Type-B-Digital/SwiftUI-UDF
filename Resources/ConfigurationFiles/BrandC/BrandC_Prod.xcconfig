@@ -1,0 +1,9 @@
+// MARK: - Core App Configuration
+API_KEY = sk-prod-brandC-production-key
+BASE_URL = https:\/\/api.brandC.com\/v1
+BUNDLE_ID = com.brandC.app
+APP_FLAVOR = production
+
+// MARK: - Visual Assets
+APP_ICON = AppIcon
+SPLASH_SCREEN = SplashScreen

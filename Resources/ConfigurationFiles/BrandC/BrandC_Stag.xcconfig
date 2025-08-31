@@ -1,0 +1,9 @@
+// MARK: - Core App Configuration
+API_KEY = sk-staging-brandC-staging-key
+BASE_URL = https:\/\/staging-api.brandC.com\/v1
+BUNDLE_ID = com.brandC.app.staging
+APP_FLAVOR = staging
+
+// MARK: - Visual Assets
+APP_ICON = AppIcon-Staging
+SPLASH_SCREEN = SplashScreen-Staging

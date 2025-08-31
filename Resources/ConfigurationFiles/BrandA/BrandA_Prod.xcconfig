@@ -1,0 +1,10 @@
+
+// MARK: - Core App Configuration
+API_KEY = sk-prod-brandA-production-key
+BASE_URL = https:\/\/api.brandA.com\/v1
+BUNDLE_ID = com.brandA.app
+APP_FLAVOR = production
+
+// MARK: - Visual Assets
+APP_ICON = AppIcon
+SPLASH_SCREEN = SplashScreen
